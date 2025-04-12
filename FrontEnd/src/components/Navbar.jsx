@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { FiBriefcase, FiAnchor, FiLogOut } from 'react-icons/fi';
+import { FaUser } from "react-icons/fa";
 import logo from '../assets/logo.png'; // Adjust the path as necessary
 
 
@@ -10,7 +11,7 @@ function Navbar() {
   const navItems = [
     { to: '/', label: 'Empresa', icon: <FiBriefcase /> },
     { to: '/embarcacion', label: 'Embarcación', icon: <FiAnchor /> },
-    { to: '/usuarios', label: 'Usuarios', icon: <FiBriefcase /> },
+    { to: '/usuarios', label: 'Usuarios', icon: <FaUser /> },
   ];
 
   return (
@@ -36,9 +37,10 @@ function Navbar() {
                 className={`flex items-center gap-3 px-4 py-4 mx-4 rounded-md text-sm font-medium 
                   tracking-wide transition-all duration-200
                   ${isActive
-                    ? 'bg-amber-500 text-black'
-                    : 'hover:bg-gray-700 hover:text-amber-400'
-                  }`}
+                    ? 'bg-sky-300 text-gray-900'  // Celeste claro
+                    : 'hover:bg-gray-800 hover:text-sky-200'
+                  }
+                  `}
               >
                 <span className="text-lg">{icon}</span>
                 {label.toUpperCase()}
