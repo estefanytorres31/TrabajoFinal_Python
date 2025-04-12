@@ -23,7 +23,7 @@ function App() {
         {/* Footer (solo si quieres otro aquí, aunque ya hay uno en la barra) */}
         <footer className="bg-gradient-to-r from-gray-800 to-gray-900 text-white text-center py-6 shadow-inner">
           <p className="text-sm md:text-base tracking-wide font-light">
-            © 2025 PERU CONTROLS SYSTEM — Todos los derechos reservados.
+            © 2025 Peru Controls System — Todos los derechos reservados.
           </p>
         </footer>
       </div>
