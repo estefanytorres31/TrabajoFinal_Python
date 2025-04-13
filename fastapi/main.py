@@ -1,71 +1,47 @@
-from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
+from fastapi import FastAPI
 import asyncpg
 import os
 from dotenv import load_dotenv
+from routers import sistemas_router, partes_router, sistema_partes_router
+from contextlib import asynccontextmanager
 
 load_dotenv()
-app = FastAPI()
-DATABASE_URL = os.getenv("DATABASE_URL")    
 
-conn= None
+DATABASE_URL = os.getenv("DATABASE_URL")
 
-#Model 
-class Empresa(BaseModel):
-    nombre: str
+conn = None
 
-@app.on_event("startup")
-async def startup():
+# Administrador de contexto para el ciclo de vida de la aplicación
+@asynccontextmanager
+async def lifespan(app: FastAPI):
     global conn
     conn = await asyncpg.connect(DATABASE_URL)
-
-@app.on_event("shutdown")
-async def shutdown():
-    await conn.close()
-
-#GET
-@app.get("/empresas")
-async def get_empresas():
-    try:
-        empresas = await conn.fetch("SELECT * FROM empresas where estado=true")
-        return [dict(empresa) for empresa in empresas]
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-#POST
-@app.post("/empresas")
-async def create_empresa(empresa: Empresa):
-    try:
-        await conn.execute("INSERT INTO empresas (nombre) VALUES ($1)", empresa.nombre)
-        return {"message": "Empresa created successfully"}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-#PUT
-@app.put("/empresas/{empresa_id}")
-async def update_empresa(empresa_id: int, empresa: Empresa):
-    try:
-        await conn.execute("UPDATE empresas SET nombre = $1 WHERE id = $2", empresa.nombre, empresa_id)
-        return {"message": "Empresa updated successfully"}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    print("Conexión a la base de datos establecida")
     
-#DELETE
-@app.delete("/empresas/{empresa_id}")
-async def delete_empresa(empresa_id: int):
-    try:
-        await conn.execute("UPDATE empresas SET estado = false WHERE id = $1", empresa_id)
-        return {"message": "Empresa deleted successfully"}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    yield
+    
+    if conn:
+        await conn.close()
+        print("Conexión a la base de datos cerrada")
 
-#GET by ID
-@app.get("/empresas/{empresa_id}")
-async def get_empresa(empresa_id: int):
-    try:
-        empresa = await conn.fetchrow("SELECT * FROM empresas WHERE id = $1 and estado=true", empresa_id)
-        if not empresa:
-            raise HTTPException(status_code=404, detail="Empresa not found")
-        return dict(empresa)
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+app = FastAPI(
+    title="API de Sistemas y Partes", 
+    description="API REST para gestionar Sistemas, Partes y sus relaciones",
+    lifespan=lifespan
+)
+
+@app.get("/")
+async def root():
+    return {"message": "API de Sistema, Partes y Sistema-Partes"}
+
+app.include_router(sistemas_router.router)
+app.include_router(partes_router.router)
+app.include_router(sistema_partes_router.router)
+
+# Para obtener la conexión desde los routers
+def get_db_connection():
+    return conn
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)
