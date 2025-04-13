@@ -56,34 +56,38 @@ async def actualizar_parte(id_parte: int, parte: ParteUpdate, conn = Depends(get
             raise HTTPException(status_code=404, detail="Parte no encontrada")
         
         update_fields = []
-        params = {}
+        param_values = []
+        param_counter = 1
         
         if parte.nombre_parte is not None:
             if await conn.fetchval("SELECT EXISTS(SELECT 1 FROM parte WHERE nombre_parte = $1 AND id_parte != $2)", 
                                   parte.nombre_parte, id_parte):
                 raise HTTPException(status_code=400, detail="Ya existe otra parte con ese nombre")
-            update_fields.append("nombre_parte = :nombre_parte")
-            params["nombre_parte"] = parte.nombre_parte
+            update_fields.append(f"nombre_parte = ${param_counter}")
+            param_values.append(parte.nombre_parte)
+            param_counter += 1
         
         if parte.estado is not None:
-            update_fields.append("estado = :estado")
-            params["estado"] = parte.estado
+            update_fields.append(f"estado = ${param_counter}")
+            param_values.append(parte.estado)
+            param_counter += 1
         
-        update_fields.append("actualizado_en = :actualizado_en")
-        params["actualizado_en"] = datetime.now()
-        params["id_parte"] = id_parte
+        update_fields.append(f"actualizado_en = ${param_counter}")
+        param_values.append(datetime.now())
+        param_counter += 1
         
         if not update_fields:
             parte_actual = await conn.fetchrow("SELECT * FROM parte WHERE id_parte = $1", id_parte)
             return dict(parte_actual)
         
-        query = f"UPDATE parte SET {', '.join(update_fields)} WHERE id_parte = :id_parte RETURNING *"
+        query = f"UPDATE parte SET {', '.join(update_fields)} WHERE id_parte = ${param_counter} RETURNING *"
+        param_values.append(id_parte)
         
-        parte_actualizada = await conn.fetchrow(query, **params)
+        parte_actualizada = await conn.fetchrow(query, *param_values)
         return dict(parte_actualizada)
     except asyncpg.PostgresError as e:
         raise HTTPException(status_code=500, detail=f"Error de base de datos: {str(e)}")
-
+    
 @router.delete("/{id_parte}")
 async def eliminar_parte(id_parte: int, conn = Depends(get_conn)):
     try:
