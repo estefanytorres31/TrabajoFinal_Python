@@ -55,41 +55,45 @@ async def actualizar_sistema(id_sistema: int, sistema: SistemaUpdate, conn = Dep
         if not existe:
             raise HTTPException(status_code=404, detail="Sistema no encontrado")
         
-        # Construir la consulta de actualización dinámicamente
         update_fields = []
-        values = []
-        params = {}
+        param_values = []
+        param_counter = 1
         
         if sistema.nombre_sistema is not None:
             if await conn.fetchval("SELECT EXISTS(SELECT 1 FROM sistema WHERE nombre_sistema = $1 AND id_sistema != $2)", 
                                   sistema.nombre_sistema, id_sistema):
                 raise HTTPException(status_code=400, detail="Ya existe otro sistema con ese nombre")
-            update_fields.append("nombre_sistema = :nombre_sistema")
-            params["nombre_sistema"] = sistema.nombre_sistema
+                
+            update_fields.append(f"nombre_sistema = ${param_counter}")
+            param_values.append(sistema.nombre_sistema)
+            param_counter += 1
         
         if sistema.descripcion is not None:
-            update_fields.append("descripcion = :descripcion")
-            params["descripcion"] = sistema.descripcion
+            update_fields.append(f"descripcion = ${param_counter}")
+            param_values.append(sistema.descripcion)
+            param_counter += 1
         
         if sistema.estado is not None:
-            update_fields.append("estado = :estado")
-            params["estado"] = sistema.estado
+            update_fields.append(f"estado = ${param_counter}")
+            param_values.append(sistema.estado)
+            param_counter += 1
         
-        update_fields.append("actualizado_en = :actualizado_en")
-        params["actualizado_en"] = datetime.now()
-        params["id_sistema"] = id_sistema
+        update_fields.append(f"actualizado_en = ${param_counter}")
+        param_values.append(datetime.now())
+        param_counter += 1
         
         if not update_fields:
             sistema_actual = await conn.fetchrow("SELECT * FROM sistema WHERE id_sistema = $1", id_sistema)
             return dict(sistema_actual)
         
-        query = f"UPDATE sistema SET {', '.join(update_fields)} WHERE id_sistema = :id_sistema RETURNING *"
+        query = f"UPDATE sistema SET {', '.join(update_fields)} WHERE id_sistema = ${param_counter} RETURNING *"
+        param_values.append(id_sistema)
         
-        sistema_actualizado = await conn.fetchrow(query, **params)
+        sistema_actualizado = await conn.fetchrow(query, *param_values)
         return dict(sistema_actualizado)
     except asyncpg.PostgresError as e:
         raise HTTPException(status_code=500, detail=f"Error de base de datos: {str(e)}")
-
+    
 @router.delete("/{id_sistema}")
 async def eliminar_sistema(id_sistema: int, conn = Depends(get_conn)):
     try:
