@@ -101,10 +101,21 @@ async def eliminar_sistema(id_sistema: int, conn = Depends(get_conn)):
         if not existe:
             raise HTTPException(status_code=404, detail="Sistema no encontrado")
         
-        await conn.execute("UPDATE sistema SET estado = false, actualizado_en = $1 WHERE id_sistema = $2", 
-                         datetime.now(), id_sistema)
-        
-        return {"mensaje": "Sistema eliminado correctamente"}
+        now = datetime.now()
+
+        await conn.execute("""
+            UPDATE sistema_parte 
+            SET estado = false 
+            WHERE id_sistema = $1
+        """, id_sistema)
+
+        await conn.execute("""
+            UPDATE sistema 
+            SET estado = false, actualizado_en = $1 
+            WHERE id_sistema = $2
+        """, now, id_sistema)
+
+        return {"mensaje": "Sistema y sus partes relacionadas fueron desactivadas correctamente"}
     except asyncpg.PostgresError as e:
         raise HTTPException(status_code=500, detail=f"Error de base de datos: {str(e)}")
 
