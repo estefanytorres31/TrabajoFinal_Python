@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException, Depends
 from typing import List
 import asyncpg
 from datetime import datetime
-from models import SistemaParteCreate, SistemaParteResponse, SistemaParteUpdate
+from models import SistemaParteCreate, SistemaParteResponse, SistemaParteUpdate, SistemaParteResponseFull
 import main
 
 router = APIRouter(prefix="/sistema-partes", tags=["Sistema-Partes"])
@@ -10,7 +10,7 @@ router = APIRouter(prefix="/sistema-partes", tags=["Sistema-Partes"])
 async def get_conn():
     return main.get_db_connection()
 
-@router.get("/", response_model=List[SistemaParteResponse])
+@router.get("/", response_model=List[SistemaParteResponseFull])
 async def listar_sistema_partes(conn = Depends(get_conn)):
     try:
         sistema_partes = await conn.fetch("""

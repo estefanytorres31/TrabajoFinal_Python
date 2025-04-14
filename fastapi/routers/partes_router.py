@@ -97,14 +97,12 @@ async def eliminar_parte(id_parte: int, conn = Depends(get_conn)):
         
         now = datetime.now()
 
-        # 1. Desactivar la parte
         await conn.execute("""
             UPDATE parte 
             SET estado = false, actualizado_en = $1 
             WHERE id_parte = $2
         """, now, id_parte)
 
-        # 2. Desactivar las relaciones con sistemas
         await conn.execute("""
             UPDATE sistema_parte 
             SET estado = false 

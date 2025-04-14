@@ -45,11 +45,20 @@ class SistemaParteCreate(SistemaParteBase):
     pass
 
 class SistemaParteUpdate(BaseModel):
-    estado: bool
+    id_sistema: Optional[int] = None
+    id_parte: Optional[int] = None
+    estado: Optional[bool] = True
+
 
 class SistemaParteResponse(SistemaParteBase):
     id_sistema_parte: int
-    nombre_sistema: Optional[str] = None  # <- NUEVO
-    nombre_parte: Optional[str] = None    # <- NUEVO
     creado_en: datetime
     actualizado_en: datetime
+
+
+class SistemaParteResponseFull(SistemaParteBase):
+    id_sistema_parte: int
+    creado_en: datetime
+    actualizado_en: datetime
+    nombre_sistema: str
+    nombre_parte: str
