@@ -13,7 +13,22 @@ async def get_conn():
 @router.get("/", response_model=List[SistemaParteResponse])
 async def listar_sistema_partes(conn = Depends(get_conn)):
     try:
-        sistema_partes = await conn.fetch("SELECT * FROM sistema_parte WHERE estado = true ORDER BY id_sistema_parte")
+        sistema_partes = await conn.fetch("""
+            SELECT 
+                sp.id_sistema_parte,
+                sp.id_sistema,
+                s.nombre_sistema AS nombre_sistema,
+                sp.id_parte,
+                p.nombre_parte AS nombre_parte,
+                sp.estado,
+                sp.creado_en,
+                sp.actualizado_en
+            FROM sistema_parte sp
+            JOIN sistema s ON sp.id_sistema = s.id_sistema
+            JOIN parte p ON sp.id_parte = p.id_parte
+            WHERE sp.estado = true
+            ORDER BY sp.id_sistema_parte
+        """)
         return [dict(sistema_parte) for sistema_parte in sistema_partes]
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error al obtener relaciones sistema-parte: {str(e)}")

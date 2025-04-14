@@ -95,10 +95,23 @@ async def eliminar_parte(id_parte: int, conn = Depends(get_conn)):
         if not existe:
             raise HTTPException(status_code=404, detail="Parte no encontrada")
         
-        await conn.execute("UPDATE parte SET estado = false, actualizado_en = $1 WHERE id_parte = $2", 
-                         datetime.now(), id_parte)
-        
-        return {"mensaje": "Parte eliminada correctamente"}
+        now = datetime.now()
+
+        # 1. Desactivar la parte
+        await conn.execute("""
+            UPDATE parte 
+            SET estado = false, actualizado_en = $1 
+            WHERE id_parte = $2
+        """, now, id_parte)
+
+        # 2. Desactivar las relaciones con sistemas
+        await conn.execute("""
+            UPDATE sistema_parte 
+            SET estado = false 
+            WHERE id_parte = $1
+        """, id_parte)
+
+        return {"mensaje": "Parte eliminada correctamente y relaciones desactivadas"}
     except asyncpg.PostgresError as e:
         raise HTTPException(status_code=500, detail=f"Error de base de datos: {str(e)}")
 

@@ -49,5 +49,7 @@ class SistemaParteUpdate(BaseModel):
 
 class SistemaParteResponse(SistemaParteBase):
     id_sistema_parte: int
+    nombre_sistema: Optional[str] = None  # <- NUEVO
+    nombre_parte: Optional[str] = None    # <- NUEVO
     creado_en: datetime
     actualizado_en: datetime
