@@ -1,6 +1,7 @@
 {
   "name": "proyectopython",
   "private": true,
+  "homepage": "https://estefanytorres31.github.io/TrabajoFinal_Python/",
   "version": "0.0.0",
   "type": "module",
   "scripts": {
@@ -13,6 +14,7 @@
     "@tailwindcss/postcss7-compat": "^2.2.17",
     "@tailwindcss/vite": "^4.1.3",
     "axios": "^1.8.4",
+    "proyectopython": "file:",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-icons": "^5.5.0",
