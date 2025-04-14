@@ -1,4 +1,4 @@
-import axios from './axiosInstance';
+import axios from './axiosInstance';    
 
 export const getPartes = () => axios.get('/partes/');
 export const getParte = (id) => axios.get(`/partes/${id}`);

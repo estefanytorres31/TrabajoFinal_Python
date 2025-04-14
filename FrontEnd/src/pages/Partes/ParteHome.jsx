@@ -1,9 +1,37 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import ParteTable from './ParteTable';
 import CreateParteModal from './CreateParteModal';
+import { getPartes, deleteParte } from '../../api/parte';
 
 function ParteHome() {
   const [showModal, setShowModal] = useState(false);
+  const [parteToEdit, setParteToEdit] = useState(null);
+  const [partes, setPartes] = useState([]);
+
+  const fetchPartes = async () => {
+    try {
+      const res = await getPartes();
+      const activas = res.data.filter((p) => p.estado === true);
+      setPartes(activas);
+    } catch (err) {
+      console.error('Error al obtener partes:', err);
+    }
+  };
+
+  useEffect(() => {
+    fetchPartes();
+  }, []);
+
+  const handleDelete = async (id) => {
+    const confirm = window.confirm('¿Deseas eliminar esta parte?');
+    if (!confirm) return;
+    try {
+      await deleteParte(id);
+      fetchPartes();
+    } catch (err) {
+      console.error('Error al eliminar parte:', err);
+    }
+  };
 
   return (
     <div className="p-6">
@@ -14,9 +42,21 @@ function ParteHome() {
         </button>
       </div>
 
-      <ParteTable />
+      <ParteTable partes={partes} onEdit={(p) => {
+        setParteToEdit(p);
+        setShowModal(true);
+      }} onDelete={handleDelete} />
 
-      {showModal && <CreateParteModal onClose={() => setShowModal(false)} />}
+      {(showModal || parteToEdit) && (
+        <CreateParteModal
+          onClose={() => {
+            setShowModal(false);
+            setParteToEdit(null);
+            fetchPartes();
+          }}
+          parteToEdit={parteToEdit}
+        />
+      )}
     </div>
   );
 }
