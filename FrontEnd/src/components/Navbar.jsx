@@ -9,9 +9,12 @@ function Navbar() {
   const location = useLocation();
 
   const navItems = [
-    { to: '/', label: 'Empresa', icon: <FiBriefcase /> },
-    { to: '/embarcacion', label: 'Embarcación', icon: <FiAnchor /> },
-    { to: '/usuarios', label: 'Usuarios', icon: <FaUser /> },
+    { to: '/', label: 'Sistemas', icon: <FiBriefcase /> },
+    // { to: '/embarcacion', label: 'Embarcación', icon: <FiAnchor /> },
+    // { to: '/usuarios', label: 'Usuarios', icon: <FaUser /> },
+    // { to: '/sistemas', label: 'Sistemas', icon: <FiAnchor /> },
+    { to: '/partes', label: 'Partes', icon: <FiAnchor /> },
+    { to: '/sistema-partes', label: 'Sistema Partes', icon: <FiAnchor /> },
   ];
 
   return (
