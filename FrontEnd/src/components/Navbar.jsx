@@ -2,6 +2,7 @@ import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { FiBriefcase, FiAnchor, FiLogOut } from 'react-icons/fi';
 import { FaUser } from "react-icons/fa";
+import { AiFillSnippets } from "react-icons/ai";
 import logo from '../assets/logo.png'; // Adjust the path as necessary
 
 
@@ -14,7 +15,7 @@ function Navbar() {
     // { to: '/usuarios', label: 'Usuarios', icon: <FaUser /> },
     // { to: '/sistemas', label: 'Sistemas', icon: <FiAnchor /> },
     { to: '/partes', label: 'Partes', icon: <FiAnchor /> },
-    { to: '/sistema-partes', label: 'Sistema Partes', icon: <FiAnchor /> },
+    { to: '/sistema-partes', label: 'Sistema Partes', icon: <AiFillSnippets />},
   ];
 
   return (

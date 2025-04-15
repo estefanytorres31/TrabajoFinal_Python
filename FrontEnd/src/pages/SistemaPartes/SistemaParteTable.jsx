@@ -7,7 +7,7 @@ function SistemaParteTable({ sistemaPartes, onEdit, onDelete }) {
       <table className="min-w-full bg-white rounded-md shadow">
         <thead className="bg-gray-800 text-white">
           <tr>
-            <th className="px-4 py-3">ID Relación</th>
+            <th className="px-4 py-3">ID</th>
             <th className="px-4 py-3">Sistema</th>
             <th className="px-4 py-3">Parte</th>
             <th className="px-4 py-3 text-center">Acciones</th>

@@ -1,13 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import SistemaTable from './SistemaTable';
 import CreateSistemaModal from './CreateSistemaModal';
-// import ModalSuccess from '../../components/modals/ModalSuccess';
-// import ModalError from '../../components/modals/ModalError';
-// import ConfirmDeleteModal from '../../components/modals/ConfirmDeleteModal';
+
 import { getSistemas, deleteSistema } from '../../api/sistema';
 import ModalSuccess from '../../components/ModalSucess';
 import ModalError from '../../components/ModalError';
-// import ConfirmDeleteModal from '../../components/modals/ConfirmDeleteModal';
+
 import ConfirmDeleteModal from '../../components/ConfirmDeleteModal';
 
 function SistemaHome() {

@@ -1,13 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import ParteTable from './ParteTable';
 import CreateParteModal from './CreateParteModal';
-// import ModalSuccess from '../../components/modals/ModalSuccess';
-// import ModalError from '../../components/modals/ModalError';
-// import ConfirmDeleteModal from '../../components/modals/ConfirmDeleteModal';
+
 import { getPartes, deleteParte } from '../../api/parte';
 import ModalSuccess from '../../components/ModalSucess';
 import ModalError from '../../components/ModalError';
-// import ConfirmDeleteModal from '../../components/modals/ConfirmDeleteModal';
+
 import ConfirmDeleteModal from '../../components/ConfirmDeleteModal';
 
 function ParteHome() {
