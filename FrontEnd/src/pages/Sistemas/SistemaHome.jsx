@@ -1,41 +1,50 @@
 import React, { useEffect, useState } from 'react';
 import SistemaTable from './SistemaTable';
 import CreateSistemaModal from './CreateSistemaModal';
-import { getSistemas } from '../../api/sistema';
-import {deleteSistema } from '../../api/sistema';
+// import ModalSuccess from '../../components/modals/ModalSuccess';
+// import ModalError from '../../components/modals/ModalError';
+// import ConfirmDeleteModal from '../../components/modals/ConfirmDeleteModal';
+import { getSistemas, deleteSistema } from '../../api/sistema';
+import ModalSuccess from '../../components/ModalSucess';
+import ModalError from '../../components/ModalError';
+// import ConfirmDeleteModal from '../../components/modals/ConfirmDeleteModal';
+import ConfirmDeleteModal from '../../components/ConfirmDeleteModal';
 
 function SistemaHome() {
   const [showModal, setShowModal] = useState(false);
   const [sistemaToEdit, setSistemaToEdit] = useState(null);
   const [sistemas, setSistemas] = useState([]);
+  const [modalSuccess, setModalSuccess] = useState(null);
+  const [modalError, setModalError] = useState(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [idToDelete, setIdToDelete] = useState(null);
 
-  // 🔄 Función para obtener sistemas desde la API
   const fetchSistemas = async () => {
     try {
       const res = await getSistemas();
       const activos = res.data.filter((s) => s.estado === true);
       setSistemas(activos);
     } catch (err) {
-      console.error('Error al obtener sistemas:', err);
+      setModalError('Error al obtener sistemas.');
     }
   };
 
-  const handleDelete = async (id) => {
-    const confirm = window.confirm('¿Estás seguro de que deseas eliminar este sistema?');
-    if (!confirm) return;
-  
-    try {
-      await deleteSistema(id);
-      fetchSistemas(); // refrescar la lista
-    } catch (error) {
-      console.error('Error al eliminar sistema:', error);
-    }
-  };
-
-  // Se ejecuta al montar el componente
   useEffect(() => {
     fetchSistemas();
   }, []);
+
+  const handleDelete = async () => {
+    try {
+      await deleteSistema(idToDelete);
+      setModalSuccess('Sistema eliminado correctamente.');
+      fetchSistemas();
+    } catch (error) {
+      setModalError('Error al eliminar sistema.');
+    } finally {
+      setIdToDelete(null);
+      setShowDeleteModal(false);
+    }
+  };
 
   return (
     <div className="p-6">
@@ -49,25 +58,45 @@ function SistemaHome() {
         </button>
       </div>
 
-      {/* Lista actualizada */}
-      <SistemaTable sistemas={sistemas} 
-      onEdit={(s) => {
-        setSistemaToEdit(s);
-        setShowModal(true);
-      }}
-      onDelete={handleDelete} // Pasar la función de eliminar
-       />
+      <SistemaTable
+        sistemas={sistemas}
+        onEdit={(s) => {
+          setSistemaToEdit(s);
+          setShowModal(true);
+        }}
+        onDelete={(id) => {
+          setIdToDelete(id);
+          setShowDeleteModal(true);
+        }}
+      />
 
-      {/* Modal para crear o editar */}
       {(showModal || sistemaToEdit) && (
         <CreateSistemaModal
+          sistemaToEdit={sistemaToEdit}
           onClose={() => {
             setShowModal(false);
             setSistemaToEdit(null);
-            fetchSistemas(); // 🔁 Recargar tabla al cerrar modal
+            fetchSistemas();
           }}
-          sistemaToEdit={sistemaToEdit}
+          onSuccess={(msg) => setModalSuccess(msg)}
+          onError={(msg) => setModalError(msg)}
         />
+      )}
+
+      {showDeleteModal && (
+        <ConfirmDeleteModal
+          mensaje="¿Deseas eliminar este sistema?"
+          onClose={() => setShowDeleteModal(false)}
+          onConfirm={handleDelete}
+        />
+      )}
+
+      {modalSuccess && (
+        <ModalSuccess mensaje={modalSuccess} onClose={() => setModalSuccess(null)} />
+      )}
+
+      {modalError && (
+        <ModalError mensaje={modalError} onClose={() => setModalError(null)} />
       )}
     </div>
   );

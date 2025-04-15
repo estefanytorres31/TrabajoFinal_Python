@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { createSistema, updateSistema } from '../../api/sistema';
 
-function CreateSistemaModal({ onClose, sistemaToEdit }) {
+function CreateSistemaModal({ onClose, sistemaToEdit, onSuccess, onError }) {
   const isEdit = !!sistemaToEdit;
 
   const [nombre, setNombre] = useState('');
@@ -23,19 +23,24 @@ function CreateSistemaModal({ onClose, sistemaToEdit }) {
     const data = {
       nombre_sistema: nombre,
       descripcion,
-      estado: true, // 🔥 siempre true
+      estado: true,
     };
 
     try {
       if (isEdit) {
         await updateSistema(sistemaToEdit.id_sistema, data);
+        onSuccess('Sistema actualizado correctamente.');
       } else {
         await createSistema(data);
+        onSuccess('Sistema creado correctamente.');
       }
-
       onClose();
     } catch (error) {
-      console.error('Error al guardar sistema:', error);
+      if (error.response?.status === 400) {
+        onError('Ya existe un sistema con ese nombre.');
+      } else {
+        onError('Error al guardar sistema.');
+      }
     }
   };
 

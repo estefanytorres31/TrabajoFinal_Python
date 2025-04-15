@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { createParte, updateParte } from '../../api/parte';
 
-function CreateParteModal({ onClose, parteToEdit }) {
+function CreateParteModal({ onClose, parteToEdit, onSuccess, onError }) {
   const isEdit = !!parteToEdit;
 
   const [nombre, setNombre] = useState('');
@@ -25,12 +25,18 @@ function CreateParteModal({ onClose, parteToEdit }) {
     try {
       if (isEdit) {
         await updateParte(parteToEdit.id_parte, data);
+        onSuccess('Parte actualizada correctamente.');
       } else {
         await createParte(data);
+        onSuccess('Parte creada correctamente.');
       }
       onClose();
     } catch (error) {
-      console.error('Error al guardar parte:', error);
+      if (error.response?.status === 400) {
+        onError('Ya existe una parte con ese nombre.');
+      } else {
+        onError('Error al guardar parte.');
+      }
     }
   };
 

@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { createRelacionSistemaParte, updateRelacionSistemaParte } from '../../api/sistemaParte';
+import {
+  createRelacionSistemaParte,
+  updateRelacionSistemaParte,
+} from '../../api/sistemaParte';
 import { getSistemas } from '../../api/sistema';
 import { getPartes } from '../../api/parte';
 
-function CreateSistemaParteModal({ onClose, sistemaParteToEdit }) {
+function CreateSistemaParteModal({ onClose, sistemaParteToEdit, onSuccess, onError }) {
   const isEdit = !!sistemaParteToEdit;
 
   const [idSistema, setIdSistema] = useState('');
@@ -29,7 +32,7 @@ function CreateSistemaParteModal({ onClose, sistemaParteToEdit }) {
         setSistemas(resSistemas.data.filter((s) => s.estado));
         setPartes(resPartes.data.filter((p) => p.estado));
       } catch (error) {
-        console.error('Error al cargar sistemas o partes:', error);
+        onError('Error al cargar sistemas o partes.');
       }
     };
     fetchData();
@@ -46,19 +49,27 @@ function CreateSistemaParteModal({ onClose, sistemaParteToEdit }) {
     try {
       if (isEdit) {
         await updateRelacionSistemaParte(sistemaParteToEdit.id_sistema_parte, data);
+        onSuccess('Relación actualizada correctamente.');
       } else {
         await createRelacionSistemaParte(data);
+        onSuccess('Relación creada correctamente.');
       }
       onClose();
     } catch (error) {
-      console.error('Error al guardar relación:', error);
+      if (error.response?.status === 400) {
+        onError('Esta relación ya existe.');
+      } else {
+        onError('Error al guardar relación.');
+      }
     }
   };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black/30">
       <div className="bg-white rounded-lg shadow-lg w-full max-w-md p-6">
-        <h2 className="text-lg font-bold mb-4">{isEdit ? 'Editar Relación' : 'Crear Relación'}</h2>
+        <h2 className="text-lg font-bold mb-4">
+          {isEdit ? 'Editar Relación' : 'Crear Relación'}
+        </h2>
         <form onSubmit={handleSubmit}>
           <label className="block mb-1 text-sm font-medium">Sistema</label>
           <select

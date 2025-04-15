@@ -1,6 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import SistemaParteTable from './SistemaParteTable';
 import CreateSistemaParteModal from './CreateSistemaParteModal';
+// import ModalSuccess from '../../components/modals/ModalSuccess';
+// import ModalError from '../../components/modals/ModalError';
+import ModalSuccess from '../../components/ModalSucess';
+import ModalError from '../../components/ModalError';
+// import ConfirmDeleteModal from '../../components/modals/ConfirmDeleteModal';
+import ConfirmDeleteModal from '../../components/ConfirmDeleteModal';
 
 import {
   getRelacionesSistemaParte,
@@ -11,6 +17,10 @@ function SistemaParteHome() {
   const [showModal, setShowModal] = useState(false);
   const [sistemaParteToEdit, setSistemaParteToEdit] = useState(null);
   const [sistemaPartes, setSistemaPartes] = useState([]);
+  const [modalSuccess, setModalSuccess] = useState(null);
+  const [modalError, setModalError] = useState(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [idToDelete, setIdToDelete] = useState(null);
 
   const fetchSistemaPartes = async () => {
     try {
@@ -18,7 +28,7 @@ function SistemaParteHome() {
       const activos = res.data.filter((item) => item.estado === true);
       setSistemaPartes(activos);
     } catch (error) {
-      console.error('Error al obtener relaciones sistema-parte:', error);
+      setModalError('Error al obtener relaciones sistema-parte.');
     }
   };
 
@@ -26,15 +36,16 @@ function SistemaParteHome() {
     fetchSistemaPartes();
   }, []);
 
-  const handleDelete = async (id) => {
-    const confirm = window.confirm('¿Seguro que deseas eliminar esta relación?');
-    if (!confirm) return;
-
+  const handleDelete = async () => {
     try {
-      await deleteRelacionSistemaParte(id);
+      await deleteRelacionSistemaParte(idToDelete);
+      setModalSuccess('Relación eliminada correctamente.');
       fetchSistemaPartes();
     } catch (error) {
-      console.error('Error al eliminar relación:', error);
+      setModalError('Error al eliminar relación.');
+    } finally {
+      setIdToDelete(null);
+      setShowDeleteModal(false);
     }
   };
 
@@ -56,7 +67,10 @@ function SistemaParteHome() {
           setSistemaParteToEdit(item);
           setShowModal(true);
         }}
-        onDelete={handleDelete}
+        onDelete={(id) => {
+          setIdToDelete(id);
+          setShowDeleteModal(true);
+        }}
       />
 
       {(showModal || sistemaParteToEdit) && (
@@ -67,6 +81,30 @@ function SistemaParteHome() {
             setSistemaParteToEdit(null);
             fetchSistemaPartes();
           }}
+          onSuccess={(msg) => setModalSuccess(msg)}
+          onError={(msg) => setModalError(msg)}
+        />
+      )}
+
+      {showDeleteModal && (
+        <ConfirmDeleteModal
+          mensaje="¿Deseas eliminar esta relación sistema-parte?"
+          onClose={() => setShowDeleteModal(false)}
+          onConfirm={handleDelete}
+        />
+      )}
+
+      {modalSuccess && (
+        <ModalSuccess
+          mensaje={modalSuccess}
+          onClose={() => setModalSuccess(null)}
+        />
+      )}
+
+      {modalError && (
+        <ModalError
+          mensaje={modalError}
+          onClose={() => setModalError(null)}
         />
       )}
     </div>
