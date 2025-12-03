@@ -206,6 +206,7 @@ Este proyecto es de código abierto y está disponible bajo la licencia MIT.
 ## 👥 Autores
 
 - **Estefany Torres** - [@estefanytorres31](https://github.com/estefanytorres31)
+- **David Llanos** - [@davidllanos31](https://github.com/davidllanos31)
 
 ## 📧 Contacto
 
