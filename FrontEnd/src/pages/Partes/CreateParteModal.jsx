@@ -12,7 +12,7 @@ function CreateParteModal({ onClose, parteToEdit, onSuccess, onError }) {
     } else {
       setNombre('');
     }
-  }, [parteToEdit]);
+  }, [parteToEdit, isEdit]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

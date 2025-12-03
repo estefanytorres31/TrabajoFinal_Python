@@ -15,7 +15,7 @@ function CreateSistemaModal({ onClose, sistemaToEdit, onSuccess, onError }) {
       setNombre('');
       setDescripcion('');
     }
-  }, [sistemaToEdit]);
+  }, [sistemaToEdit, isEdit]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

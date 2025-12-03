@@ -22,7 +22,7 @@ function ParteHome() {
       const res = await getPartes();
       const activas = res.data.filter((p) => p.estado === true);
       setPartes(activas);
-    } catch (err) {
+    } catch {
       setModalError('Error al obtener partes.');
     }
   };
@@ -36,7 +36,7 @@ function ParteHome() {
       await deleteParte(idToDelete);
       setModalSuccess('Parte eliminada correctamente.');
       fetchPartes();
-    } catch (err) {
+    } catch {
       setModalError('Error al eliminar parte.');
     } finally {
       setIdToDelete(null);
