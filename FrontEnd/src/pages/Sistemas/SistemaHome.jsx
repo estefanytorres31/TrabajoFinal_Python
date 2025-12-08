@@ -22,7 +22,7 @@ function SistemaHome() {
       const res = await getSistemas();
       const activos = res.data.filter((s) => s.estado === true);
       setSistemas(activos);
-    } catch (err) {
+    } catch {
       setModalError('Error al obtener sistemas.');
     }
   };
@@ -36,7 +36,7 @@ function SistemaHome() {
       await deleteSistema(idToDelete);
       setModalSuccess('Sistema eliminado correctamente.');
       fetchSistemas();
-    } catch (error) {
+    } catch {
       setModalError('Error al eliminar sistema.');
     } finally {
       setIdToDelete(null);

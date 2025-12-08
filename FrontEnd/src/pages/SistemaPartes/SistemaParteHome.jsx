@@ -26,7 +26,7 @@ function SistemaParteHome() {
       const res = await getRelacionesSistemaParte();
       const activos = res.data.filter((item) => item.estado === true);
       setSistemaPartes(activos);
-    } catch (error) {
+    } catch {
       setModalError('Error al obtener relaciones sistema-parte.');
     }
   };
@@ -40,7 +40,7 @@ function SistemaParteHome() {
       await deleteRelacionSistemaParte(idToDelete);
       setModalSuccess('Relación eliminada correctamente.');
       fetchSistemaPartes();
-    } catch (error) {
+    } catch {
       setModalError('Error al eliminar relación.');
     } finally {
       setIdToDelete(null);

@@ -206,6 +206,7 @@ Este proyecto es de código abierto y está disponible bajo la licencia MIT.
 ## 👥 Autores
 
 - **Estefany Torres** - [@estefanytorres31](https://github.com/estefanytorres31)
+- **David Llanos** - [@davidllanos31](https://github.com/davidllanos31)
 
 ## 📧 Contacto
 
@@ -214,7 +215,3 @@ Para preguntas o sugerencias, por favor abre un issue en el repositorio.
 ---
 
 ⭐️ Si te ha sido útil este proyecto, ¡no olvides darle una estrella!
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript and enable type-aware lint rules. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
